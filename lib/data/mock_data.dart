@@ -1,8 +1,9 @@
 import '../models/product.dart';
 
-const _imgOil = 'https://picsum.photos/seed/bosch-oil/600/400';
-const _imgBrake = 'https://picsum.photos/seed/brake/600/400';
-const _imgDisc = 'https://picsum.photos/seed/disc/600/400';
+const _imgOil = 'assets/images/oil.png';
+const _imgBrake = 'assets/images/brakedisc.png';
+const _imgDisc = 'assets/images/pads.png';
+const _imgAir = 'assets/images/airfilter.png';
 
 final List<Product> popularProducts = [
   Product(
@@ -57,7 +58,7 @@ final List<Product> popularProducts = [
     vehicle: 'Honda Civic 2017-2018',
     price: 19.99,
     rating: 4.5,
-    imageUrl: 'https://picsum.photos/seed/air/600/400',
+    imageUrl: _imgAir,
     vendor: 'Autopartes ES',
     deliveryEta: '45 minutos',
     attributes: {
@@ -68,7 +69,7 @@ final List<Product> popularProducts = [
 ];
 
 final List<Map<String, String>> carPartsForYou = [
-  {'title': 'Toyota Corolla','subtitle': 'Envío gratis del 1 - 2 horas','image': 'https://picsum.photos/seed/corolla/300/200',},
-  {'title': 'Honda Civic','subtitle': 'Hasta 20% de descuento en modelos 2017 - 2018','image': 'https://picsum.photos/seed/civic/300/200',},
-  {'title': 'Hyundai Elantra','subtitle': 'Ofertas por temporada','image': 'https://picsum.photos/seed/elantra/300/200',},
+  {'title': 'Toyota Corolla','subtitle': 'Envío gratis del 1 - 2 horas','image': 'assets/images/corolla.png'},
+  {'title': 'Honda Civic','subtitle': 'Hasta 20% de descuento en modelos 2017 - 2018','image': 'assets/images/civic.png'},
+  {'title': 'Hyundai Elantra','subtitle': 'Ofertas por temporada','image': 'assets/images/hyundai.png'},
 ];

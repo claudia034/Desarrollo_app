@@ -15,6 +15,7 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int qty = 1;
+  static const String _imgBrake = 'assets/images/pads.png'; // Update with your actual asset path
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
+        leading: IconButton(icon: Icon(Icons.arrow_back, color: color.primary), onPressed: () => Navigator.pop(context)),
         title: const Text('Info de Producto'),
         backgroundColor: color.surface,
         actions: [
@@ -50,7 +51,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Center(child: ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.network(product.imageUrl, height: 180, fit: BoxFit.cover))),
+          Center(child: appImage(product.imageUrl, height: 180, fit: BoxFit.cover, radius: BorderRadius.circular(12))),
           const SizedBox(height: 16),
           Text(product.name, style: text.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
@@ -79,14 +80,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           Column(children: [
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.network(product.imageUrl, width: 48, height: 48, fit: BoxFit.cover)),
+              leading: appImage(product.imageUrl, width: 48, height: 48, fit: BoxFit.cover, radius: BorderRadius.circular(8)),
               title: Text(product.name),
               subtitle: const Text('Toyota Corolla 2015-2018'),
               trailing: Text(formatCurrency(product.price), style: TextStyle(color: color.primary, fontWeight: FontWeight.bold)),
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.network('https://picsum.photos/seed/related/600/400', width: 48, height: 48, fit: BoxFit.cover)),
+              leading: appImage(_imgBrake, width: 48, height: 48, fit: BoxFit.cover, radius: BorderRadius.circular(8)),
               title: const Text('Sistema de frenos'),
               subtitle: const Text('Toyota Corolla 2010-2013'),
               trailing: Text('\$84.99', style: TextStyle(color: color.primary, fontWeight: FontWeight.bold)),

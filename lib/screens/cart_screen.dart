@@ -47,10 +47,7 @@ class CartScreen extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.network(it.p.imageUrl, width: 56, height: 56, fit: BoxFit.cover),
-                        ),
+                        appImage(it.p.imageUrl, width: 56, height: 56, fit: BoxFit.cover, radius: BorderRadius.circular(12)),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(

@@ -1,6 +1,21 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 
+Widget appImage(
+  String path, {
+  double? width,
+  double? height,
+  BoxFit fit = BoxFit.cover,
+  BorderRadius? radius,
+}) {
+  final isNetwork = path.startsWith('http');
+  final img = isNetwork
+      ? Image.network(path, width: width, height: height, fit: fit)
+      : Image.asset(path, width: width, height: height, fit: fit);
+  if (radius != null) return ClipRRect(borderRadius: radius, child: img);
+  return img;
+}
+
 Widget ratingStars(double rating) {
   final full = rating.floor();
   final half = (rating - full) >= 0.5;
@@ -59,9 +74,12 @@ class ProductListTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(product.imageUrl, width: 64, height: 64, fit: BoxFit.cover),
+            appImage(
+              product.imageUrl,
+              width: 64,
+              height: 64,
+              fit: BoxFit.cover,
+              radius: BorderRadius.circular(12),
             ),
             const SizedBox(width: 12),
             Expanded(
