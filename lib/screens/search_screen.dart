@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../data/mock_data.dart';
 import '../models/product.dart';
-import '../models/cart.dart';
 import '../widgets/common_widgets.dart';   // appImage, formatCurrency
-import '../widgets/home_widgets.dart';     // EditableSearchBar
+import '../widgets/home_widgets.dart';     // EditableSearchBar, AppSliverHeader
 import 'product_detail_screen.dart';
 
 enum SortOption {
@@ -239,75 +237,19 @@ class _SearchScreenState extends State<SearchScreen> {
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
-          // HEADER reutilizando diseño de Home (degradado + curva + search editable)
-          SliverAppBar(
-            pinned: true,
-            expandedHeight: 230,
-            title: const Text('Calle chiltiupan'),
-            actions: [
-              IconButton(icon: const Icon(Icons.notifications_none), onPressed: () {}),
-              Consumer<CartModel>(builder: (_, cart, __) {
-                return Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    IconButton(icon: const Icon(Icons.shopping_cart_outlined), onPressed: () => Navigator.pushNamed(context, '/cart')),
-                    if (cart.totalCount > 0)
-                      Positioned(
-                        right: 8, top: 8,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                          child: Text('${cart.totalCount}', style: TextStyle(color: cs.primary, fontSize: 10, fontWeight: FontWeight.bold)),
-                        ),
-                      ),
-                  ],
+          AppSliverHeader(
+            showBackButton: true,
+            searchWidget: StatefulBuilder(
+              builder: (context, setSB) {
+                return EditableSearchBar(
+                  controller: queryCtrl,
+                  onSubmit: () => setState(() {}),
+                  onChanged: (_) {
+                    setState(() {}); // Actualizar resultados en tiempo real
+                    setSB(() {}); // refresca icono clear/arrow
+                  },
                 );
-              }),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [cs.primary, cs.primary.withOpacity(0.75)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: -30,
-                    left: -40,
-                    right: -40,
-                    child: Container(
-                      height: 80,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.vertical(top: Radius.elliptical(300, 60)),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 16,
-                    right: 16,
-                    bottom: 24,
-                    child: StatefulBuilder(
-                      builder: (context, setSB) {
-                        return EditableSearchBar(
-                          controller: queryCtrl,
-                          onSubmit: () => setState(() {}),
-                          onChanged: (_) {
-                            setState(() {}); // Actualizar resultados en tiempo real
-                            setSB(() {}); // refresca icono clear/arrow
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
+              },
             ),
           ),
 

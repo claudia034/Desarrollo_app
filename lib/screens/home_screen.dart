@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../data/mock_data.dart';
-import '../models/cart.dart';
-import '../models/product.dart';
 import '../widgets/common_widgets.dart'; // appImage + formatCurrency
 import 'product_detail_screen.dart';
 import '../widgets/home_widgets.dart';
@@ -43,8 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: NavigationBar(
@@ -82,96 +77,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            pinned: true,
-            expandedHeight: 230,
-            backgroundColor: cs.primary,
-            foregroundColor: Colors.white,
-            title: const Text('Calle chiltiupan'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.notifications_none, color: Colors.white),
-                onPressed: () {},
-              ),
-              Consumer<CartModel>(
-                builder: (_, cart, __) {
-                  return Stack(
-                    alignment: Alignment.topRight,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
-                        onPressed: () => Navigator.pushNamed(context, '/cart'),
-                      ),
-                      if (cart.totalCount > 0)
-                        Positioned(
-                          right: 8,
-                          top: 8,
-                          child: Container(
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '${cart.totalCount}',
-                              style: TextStyle(
-                                color: cs.primary,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  // Gradiente rojo (usa el primary del tema: #C8012C)
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context).colorScheme.primary.withOpacity(0.85),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                  ),
-                  // 2) Curva blanca inferior (se dibuja ANTES que la búsqueda)
-                    Positioned(
-                      bottom: -30,
-                      left: -40,
-                      right: -40,
-                      child: Container(
-                        height: 80,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.elliptical(300, 60),
-                          ),
-                        ),
-                      ),
-                    ),
-                  // Buscador tipo píldora
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: SearchBarPill(
-                        controller: _searchController,
-                        onSubmit: _navigateToSearch,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          AppSliverHeader(
+            searchWidget: SearchBarPill(
+              controller: _searchController,
+              onSubmit: _navigateToSearch,
             ),
           ),
 

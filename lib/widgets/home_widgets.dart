@@ -1,5 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/common_widgets.dart'; // usa appImage(...) de tu helper
+import '../models/cart.dart';
+import '../services/auth_service.dart';
 
 class SearchBarPill extends StatefulWidget {
   final VoidCallback onSubmit;
@@ -390,10 +394,398 @@ class PopularProductCard extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.black54),
           ],
         ),
       ),
+    );
+  }
+}
+
+// ===== Carrusel de Anuncios =====
+class AdvertisementCarousel extends StatefulWidget {
+  const AdvertisementCarousel({super.key});
+
+  @override
+  State<AdvertisementCarousel> createState() => _AdvertisementCarouselState();
+}
+
+class _AdvertisementCarouselState extends State<AdvertisementCarousel> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+  late Timer _timer;
+
+  // Datos de anuncios publicitarios
+  final List<Map<String, dynamic>> _advertisements = [
+    {
+      'title': '50% OFF en Frenos',
+      'subtitle': 'Promoción válida hasta fin de mes',
+      'color': const Color(0xFF1565C0),
+      'icon': Icons.car_repair,
+      'onTap': () => print('Clicked: Brake Special'),
+    },
+    {
+      'title': 'Cambio de Aceite Gratis',
+      'subtitle': 'Con cualquier servicio mayor a \$100',
+      'color': const Color(0xFF2E7D32),
+      'icon': Icons.oil_barrel,
+      'onTap': () => print('Clicked: Oil Change'),
+    },
+    {
+      'title': 'Llantas Premium',
+      'subtitle': '3x2 en todas las marcas',
+      'color': const Color(0xFFD84315),
+      'icon': Icons.tire_repair,
+      'onTap': () => print('Clicked: Tire Sale'),
+    },
+    {
+      'title': 'Seguro Vehicular',
+      'subtitle': 'Cotiza y ahorra hasta 30%',
+      'color': const Color(0xFF7B1FA2),
+      'icon': Icons.security,
+      'onTap': () => print('Clicked: Insurance'),
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoSlide();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoSlide() {
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (_currentPage < _advertisements.length - 1) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+      
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          _currentPage,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 120,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: PageView.builder(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentPage = index;
+          });
+        },
+        itemCount: _advertisements.length,
+        itemBuilder: (context, index) {
+          final ad = _advertisements[index];
+          return GestureDetector(
+            onTap: ad['onTap'],
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: [
+                    ad['color'].withOpacity(0.8),
+                    ad['color'],
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: [
+                  // Patrón de fondo
+                  Positioned.fill(
+                    child: CustomPaint(
+                      painter: _PatternPainter(color: Colors.white.withOpacity(0.1)),
+                    ),
+                  ),
+                  // Contenido del anuncio
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                ad['title'],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                ad['subtitle'],
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 12,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Text(
+                                  'Ver más',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Icon(
+                                ad['icon'],
+                                size: 40,
+                                color: Colors.white.withOpacity(0.8),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Indicador de posición
+                  Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(
+                        _advertisements.length,
+                        (dotIndex) => Container(
+                          width: 6,
+                          height: 6,
+                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: dotIndex == _currentPage
+                                ? Colors.white
+                                : Colors.white.withOpacity(0.4),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// Painter para el patrón de fondo
+class _PatternPainter extends CustomPainter {
+  final Color color;
+  
+  _PatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+
+    // Dibujar líneas diagonales
+    for (double i = -size.height; i < size.width + size.height; i += 20) {
+      canvas.drawLine(
+        Offset(i, 0),
+        Offset(i + size.height, size.height),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// ===== Header Reutilizable =====
+class AppSliverHeader extends StatelessWidget {
+  final Widget searchWidget;
+  final bool showBackButton;
+  
+  const AppSliverHeader({
+    super.key,
+    required this.searchWidget,
+    this.showBackButton = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    
+    return Consumer<AuthService>(
+      builder: (context, authService, child) {
+        final user = authService.currentUser;
+        final displayAddress = user?.address ?? 'Calle chiltiupán';
+        
+        return SliverAppBar(
+          pinned: true,
+          expandedHeight: 280,
+          backgroundColor: cs.primary,
+          foregroundColor: Colors.white,
+          automaticallyImplyLeading: showBackButton,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                displayAddress,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              if (user != null)
+                Text(
+                  user.status.label,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.notifications_none, color: Colors.white),
+              onPressed: () {},
+            ),
+            Consumer<CartModel>(
+              builder: (_, cart, __) {
+                return Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
+                      onPressed: () => Navigator.pushNamed(context, '/cart'),
+                    ),
+                    if (cart.totalCount > 0)
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${cart.totalCount}',
+                            style: TextStyle(
+                              color: cs.primary,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ],
+          flexibleSpace: FlexibleSpaceBar(
+            background: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Gradiente rojo
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        cs.primary,
+                        cs.primary.withOpacity(0.85),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+                // Carrusel de anuncios publicitarios
+                Positioned(
+                  top: 100,
+                  left: 0,
+                  right: 0,
+                  child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  child: const AdvertisementCarousel(),
+                  ),
+                ),
+                // Curva blanca inferior
+                Positioned(
+                  bottom: -30,
+                  left: -40,
+                  right: -40,
+                  child: Container(
+                    height: 80,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.elliptical(300, 60),
+                      ),
+                    ),
+                  ),
+                ),
+                // Widget de búsqueda
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: 24,
+                  child: searchWidget,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
